@@ -1,0 +1,52 @@
+"""
+LeetCode 101: Symmetric Tree
+
+✅ Problem Statement:
+Given the root of a binary tree, check whether it is a mirror of itself 
+(i.e., symmetric around its center).
+
+🔍 Example:
+Input: [1,2,2,3,4,4,3]
+Output: True
+
+📌 Concepts Used:
+- Binary Tree
+- Recursion (Depth-First Search)
+- Tree Mirror Checking
+
+📈 Time Complexity: O(n)
+We visit each node once, where n is the number of nodes in the tree.
+
+📦 Space Complexity: O(h)
+Where h is the height of the tree, due to the recursion stack.
+(h = log n for balanced trees, h = n for skewed trees)
+"""
+
+# Definition for a binary tree node (Already available in LeetCode)
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class Solution:
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+        # An empty tree is symmetric
+        if not root:
+            return True
+        # Call helper to compare left and right subtrees
+        return self.isMirror(root.left, root.right)
+
+    def isMirror(self, left: Optional[TreeNode], right: Optional[TreeNode]) -> bool:
+        # Case 1: both are None => symmetric
+        if not left and not right:
+            return True
+        # Case 2: one is None => not symmetric
+        if not left or not right:
+            return False
+        # Case 3: values must match, and opposite children must mirror each other
+        return (
+            left.val == right.val and
+            self.isMirror(left.left, right.right) and
+            self.isMirror(left.right, right.left)
+        )
