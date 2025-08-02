@@ -1,0 +1,56 @@
+"""
+🔢 LeetCode 114: Flatten Binary Tree to Linked List  
+🔗 Problem link: https://leetcode.com/problems/flatten-binary-tree-to-linked-list/
+
+🧩 Problem Statement:
+Given the `root` of a binary tree, flatten the tree into a "linked list":
+- The "linked list" should use the **right child pointers**.
+- The left child of all nodes should be set to `None`.
+- The linked list should follow the **same order as a pre-order traversal**.
+
+🧠 Example:
+Input:
+        1
+       / \
+      2   5
+     / \   \
+    3   4   6
+
+Output (flattened as a linked list using right pointers):
+1 -> 2 -> 3 -> 4 -> 5 -> 6
+
+✅ Constraints:
+- The number of nodes in the tree is in the range [0, 2000].
+- -100 <= Node.val <= 100
+
+🚫 Do not return anything — modify the tree **in-place**.
+"""
+
+from typing import Optional
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val: int = 0, left: 'Optional[TreeNode]' = None, right: 'Optional[TreeNode]' = None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class Solution:
+    def flatten(self, root: Optional[TreeNode]) -> None:
+        """
+        ✅ Do not return anything, modify root in-place instead.
+        The idea is to use reverse preorder traversal (right → left → root).
+        """
+        self.prev = None
+
+        def reverse_preorder(node):
+            if not node:
+                return
+            reverse_preorder(node.right)
+            reverse_preorder(node.left)
+
+            node.right = self.prev
+            node.left = None
+            self.prev = node
+
+        reverse_preorder(root)
