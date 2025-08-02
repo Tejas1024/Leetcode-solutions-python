@@ -42,7 +42,7 @@ class Solution:
 # ----------------------------
 # 📊 Time Complexity: O(n)
 # - We visit every node in the binary tree once.
-# - 'n' is the total number of nodes.
+# - 'n' is the total number of nodes
 
 # 🧠 Space Complexity: O(h)
 # - 'h' is the height of the tree.
