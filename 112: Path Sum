@@ -1,0 +1,45 @@
+# LeetCode 112: Path Sum
+# Difficulty: Easy
+#
+# 🧠 Problem Statement:
+# Given the root of a binary tree and an integer targetSum,
+# return True if the tree has a root-to-leaf path such that
+# adding up all the values along the path equals targetSum.
+# A leaf is a node with no children.
+#
+# Example:
+# Input: root = [5,4,8,11,null,13,4,7,2,null,null,null,1], targetSum = 22
+# Output: True
+#
+# -----------------------------------------------------------
+
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
+        # 🌱 Base case: if the tree is empty
+        if root is None:
+            return False
+        
+        # 🍃 Leaf node check: if no children, check if sum matches
+        if root.left is None and root.right is None:
+            return targetSum == root.val
+        
+        # ➡️ Recursive step: subtract current node's value from targetSum
+        remaining_sum = targetSum - root.val
+        
+        # 🔄 Check left OR right subtree
+        return (self.hasPathSum(root.left, remaining_sum) or
+                self.hasPathSum(root.right, remaining_sum))
+
+
+# -----------------------------------------------------------
+# 📊 Complexity Analysis:
+# Time Complexity: O(n) → Visit every node once in worst case.
+# Space Complexity: O(h) → Height of tree for recursion stack (worst case h = n for skewed tree).
+# -----------------------------------------------------------
