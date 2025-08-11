@@ -1,0 +1,52 @@
+# LeetCode Problem 129: Sum Root to Leaf Numbers
+# Difficulty: Medium
+
+# ----------------------------
+# 🧠 Problem Statement:
+# You are given the root of a binary tree containing digits from 0 to 9 only.
+# Each root-to-leaf path represents a number.
+# For example, the root-to-leaf path 1 -> 2 -> 3 represents the number 123.
+#
+# Return the total sum of all root-to-leaf numbers.
+# A leaf is a node with no children.
+#
+# Example:
+# Input: root = [1,2,3]
+# Output: 25
+# Explanation: The numbers are 12 and 13, sum = 25
+# ----------------------------
+
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    def sumNumbers(self, root: Optional[TreeNode]) -> int:
+        def dfs(node, current_sum):
+            # If no node, return 0
+            if not node:
+                return 0
+            
+            # Update the number formed so far
+            current_sum = current_sum * 10 + node.val
+            
+            # If it's a leaf, return the number
+            if not node.left and not node.right:
+                return current_sum
+            
+            # Sum from left and right subtrees
+            return dfs(node.left, current_sum) + dfs(node.right, current_sum)
+        
+        return dfs(root, 0)
+
+
+# ----------------------------
+# 📈 Time Complexity: O(N)
+# We visit each node once.
+#
+# 📦 Space Complexity: O(H)
+# H = height of tree (stack space due to recursion).
+# ----------------------------
