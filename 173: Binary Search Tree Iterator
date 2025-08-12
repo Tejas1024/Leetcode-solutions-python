@@ -1,0 +1,63 @@
+# LeetCode Problem 173: Binary Search Tree Iterator
+# Difficulty: Medium
+
+# ----------------------------
+# 🧠 Problem Statement:
+# Implement the BSTIterator class that represents an iterator over the
+# in-order traversal of a binary search tree (BST):
+#
+# - BSTIterator(TreeNode root) initializes the object with the root node of the BST.
+# - int next() returns the next smallest number in the BST.
+# - boolean hasNext() returns true if there exists a next number in the traversal.
+#
+# Example:
+# Input:
+# ["BSTIterator", "next", "next", "hasNext", "next", "hasNext", "next", "hasNext", "next", "hasNext"]
+# [[[7,3,15,null,null,9,20]], [], [], [], [], [], [], [], [], []]
+#
+# Output:
+# [null, 3, 7, true, 9, true, 15, true, 20, false]
+# ----------------------------
+
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class BSTIterator:
+
+    def __init__(self, root: Optional[TreeNode]):
+        # Stack for simulating in-order traversal
+        self.stack = []
+        self._leftmost_inorder(root)
+
+    def _leftmost_inorder(self, node):
+        # Push all left nodes to stack
+        while node:
+            self.stack.append(node)
+            node = node.left
+
+    def next(self) -> int:
+        # Pop the top element
+        top_node = self.stack.pop()
+        
+        # If it has a right child, push its leftmost path
+        if top_node.right:
+            self._leftmost_inorder(top_node.right)
+        
+        return top_node.val
+
+    def hasNext(self) -> bool:
+        return len(self.stack) > 0
+
+
+# ----------------------------
+# 📈 Time Complexity:
+# - `next()` amortized O(1)
+# - `hasNext()` O(1)
+#
+# 📦 Space Complexity: O(H)
+# H = height of tree (stack usage).
+# ----------------------------
