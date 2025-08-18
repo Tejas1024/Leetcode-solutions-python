@@ -1,0 +1,86 @@
+# 230. Kth Smallest Element in a BST
+# Problem:
+# Given the root of a binary search tree (BST) and an integer k,
+# return the kth (1-indexed) smallest element in the tree.
+#
+# Example:
+# Input: root = [3,1,4,null,2], k = 1
+# Output: 1
+#
+# Explanation:
+# Inorder traversal of BST gives sorted order of elements.
+# We simply return the kth element in that traversal.
+
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+from typing import Optional
+
+# -------------------------
+# Approach 1: Recursive Inorder Traversal
+# -------------------------
+class Solution:
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        """
+        Recursive inorder traversal (Left -> Root -> Right).
+        Keep a counter of how many nodes visited.
+        When counter == k, return that node's value.
+        """
+
+        self.count = 0
+        self.answer = None
+
+        def inorder(node):
+            if not node or self.answer is not None:
+                return
+
+            inorder(node.left)     # visit left
+            self.count += 1
+            if self.count == k:    # found kth element
+                self.answer = node.val
+                return
+            inorder(node.right)    # visit right
+
+        inorder(root)
+        return self.answer
+
+
+# -------------------------
+# Approach 2: Iterative Inorder Traversal (Using Stack)
+# -------------------------
+class SolutionIterative:
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        """
+        Iterative inorder traversal with explicit stack.
+        Pop nodes in sorted order until kth is reached.
+        """
+
+        stack = []
+        while True:
+            # Go left as much as possible
+            while root:
+                stack.append(root)
+                root = root.left
+
+            root = stack.pop()   # process node
+            k -= 1
+            if k == 0:           # kth smallest found
+                return root.val
+
+            root = root.right    # move right
+
+
+# -------------------------
+# Complexity Analysis
+# -------------------------
+# Time Complexity:
+# - Both approaches: O(H + k), where H is height of tree
+#   (worst-case O(N) in skewed tree, O(logN + k) in balanced tree).
+#
+# Space Complexity:
+# - Recursive: O(H) due to call stack
+# - Iterative: O(H) due to explicit stack
