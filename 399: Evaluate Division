@@ -1,0 +1,86 @@
+"""
+LeetCode Problem 399: Evaluate Division
+---------------------------------------
+Problem Statement:
+You are given equations in the format A / B = k, where A and B are variables represented as strings, 
+and k is a real number (double). Some equations are given, and you are asked to evaluate queries.
+
+Return the answers for all queries. If the answer does not exist, return -1.0.
+
+Example:
+Input: equations = [["a","b"],["b","c"]], values = [2.0,3.0], 
+       queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
+Output: [6.00000,0.50000,-1.00000,1.00000,-1.00000]
+
+Explanation:
+- a / c = (a / b) * (b / c) = 2.0 * 3.0 = 6.0
+- b / a = 1 / (a / b) = 1 / 2.0 = 0.5
+- a / e = not possible => -1.0
+- a / a = 1.0
+- x / x = -1.0 (x not found)
+
+Constraints:
+- 1 <= equations.length <= 20
+- equations[i].length == 2
+- 1 <= A.length, B.length <= 5
+- 0.0 < values[i] <= 20.0
+- 1 <= queries.length <= 20
+- queries[i].length == 2
+- A, B consist of lowercase English letters and digits.
+
+---------------------------------------
+Approach:
+1. Build a graph where each variable is a node.
+2. Each equation A / B = k adds:
+   - Edge A → B with weight k
+   - Edge B → A with weight 1/k
+3. For each query (X, Y), perform DFS/BFS to find if a path exists.
+4. Multiply weights along the path to compute result.
+5. If no path exists, return -1.0.
+
+---------------------------------------
+Time Complexity:
+O(N + Q * M), where:
+- N = number of equations,
+- Q = number of queries,
+- M = number of neighbors explored per query.
+Worst case: visiting all nodes per query.
+
+Space Complexity:
+O(N), for the graph storage and recursion stack.
+"""
+
+from collections import defaultdict
+
+class Solution:
+    def calcEquation(self, equations, values, queries):
+        graph = defaultdict(dict)
+
+        # Build the graph
+        for (a, b), val in zip(equations, values):
+            graph[a][b] = val
+            graph[b][a] = 1 / val
+
+        # DFS helper function
+        def dfs(start, end, visited):
+            if start not in graph or end not in graph:
+                return -1.0
+            if start == end:
+                return 1.0
+
+            visited.add(start)
+
+            for neighbor, val in graph[start].items():
+                if neighbor not in visited:
+                    result = dfs(neighbor, end, visited)
+                    if result != -1.0:
+                        return result * val
+
+            return -1.0
+
+        # Process queries
+        result = []
+        for x, y in queries:
+            result.append(dfs(x, y, set()))
+
+        return result
