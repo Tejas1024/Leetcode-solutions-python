@@ -1,0 +1,75 @@
+LeetCode Problem 207: Course Schedule
+---------------------------------
+Problem Statement:
+There are a total of `numCourses` courses you have to take, labeled from 0 to numCourses - 1.  
+Some courses may have prerequisites, given as a list of pairs `prerequisites` where:
+- `prerequisites[i] = [a, b]` means you must take course `b` before taking course `a`.
+
+Return `true` if you can finish all courses, otherwise return `false`.
+
+Example 1:
+Input: numCourses = 2, prerequisites = [[1,0]]
+Output: true
+Explanation: You can take course 0 first and then take course 1.
+
+Example 2:
+Input: numCourses = 2, prerequisites = [[1,0],[0,1]]
+Output: false
+Explanation: There is a cycle (deadlock) between courses 0 and 1.
+
+Constraints:
+- 1 <= numCourses <= 2000
+- 0 <= prerequisites.length <= 5000
+- prerequisites[i].length == 2
+- 0 <= ai, bi < numCourses
+- All prerequisite pairs are unique.
+
+---------------------------------
+Approach (Topological Sort with BFS - Kahn’s Algorithm):
+1. Build a graph where each course points to its dependent courses.
+2. Track the indegree (number of prerequisites) for each course.
+3. Initialize a queue with courses having 0 indegree (no prerequisites).
+4. Process each course in the queue:
+   - Reduce the indegree of its dependent courses.
+   - If any dependent course’s indegree becomes 0, add it to the queue.
+5. If all courses are processed, return True, else False (cycle exists).
+
+---------------------------------
+Time Complexity:
+O(N + E), where:
+- N = number of courses,
+- E = number of prerequisites.
+
+Space Complexity:
+O(N + E), for adjacency list and indegree array.
+
+---------------------------------
+Python Solution:
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        # Step 1: Build graph and indegree array
+        graph = [[] for _ in range(numCourses)]
+        indegree = [0] * numCourses
+
+        for course, pre in prerequisites:
+            graph[pre].append(course)
+            indegree[course] += 1
+
+        # Step 2: Initialize queue with courses having no prerequisites
+        queue = []
+        for i in range(numCourses):
+            if indegree[i] == 0:
+                queue.append(i)
+
+        # Step 3: Process queue
+        count = 0
+        while queue:
+            curr = queue.pop(0)
+            count += 1
+            for neighbor in graph[curr]:
+                indegree[neighbor] -= 1
+                if indegree[neighbor] == 0:
+                    queue.append(neighbor)
+
+        # Step 4: Check if all courses are finished
+        return count == numCourses
