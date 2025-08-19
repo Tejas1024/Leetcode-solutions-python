@@ -27,14 +27,52 @@ Constraints:
 
 ---------------------------------
 Approach:
-1. Use DFS or BFS to traverse the graph.
+1. Use DFS to traverse the graph.
 2. Maintain a dictionary (hashmap) that maps original nodes to their cloned copies.
 3. For each node, clone it if not already cloned.
-4. Recursively (DFS) or iteratively (BFS) clone its neighbors.
+4. Recursively (DFS) clone its neighbors.
 5. Return the cloned graph starting from the given node.
 
 ---------------------------------
 Time Complexity:
+O(N + E), where
+- N = number of nodes,
+- E = number of edges.
+We visit each node and edge once.
+
+Space Complexity:
+O(N), for storing the hashmap of cloned nodes and recursion stack in DFS.
+"""
+
+# Definition for a Node in the graph.
+class Node:
+    def __init__(self, val=0, neighbors=None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+class Solution:
+    def cloneGraph(self, node: 'Node') -> 'Node':
+        if not node:
+            return None
+
+        # Dictionary to map original nodes -> cloned nodes
+        cloned = {}
+
+        def dfs(curr):
+            if curr in cloned:
+                return cloned[curr]
+
+            # Clone the current node
+            copy = Node(curr.val)
+            cloned[curr] = copy
+
+            # Clone neighbors
+            for neighbor in curr.neighbors:
+                copy.neighbors.append(dfs(neighbor))
+
+            return copy
+
+        return dfs(node)Time Complexity:
 O(N + E), where
 - N = number of nodes,
 - E = number of edges.
