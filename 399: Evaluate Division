@@ -1,40 +1,85 @@
 """
-LeetCode Problem 399: Evaluate Division
----------------------------------
-Problem Statement:
-You are given an array of variable pairs equations and an array of real numbers values, 
-where equations[i] = [Ai, Bi] and values[i] represent the equation Ai / Bi = values[i]. 
-Each Ai or Bi is a string that represents a single variable.
+LeetCode 399. Evaluate Division
 
-You are also given some queries, where queries[j] = [Cj, Dj] represents the equation Cj / Dj.
-Return the answers for all queries. If the answer does not exist, return -1.0.
+Problem:
+You are given an array of equations A / B = k, where A and B are variables represented as strings,
+and k is a floating-point number. Some queries are also given, where you must evaluate A / B.
 
+If the answer does not exist, return -1.0.
+
+------------------------------------------------------------
 Example:
-Input: 
-equations = [["a","b"],["b","c"]], values = [2.0,3.0], queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
-Output: [6.00000,0.50000,-1.00000,1.00000,-1.00000]
+Input:
+equations = [["a","b"],["b","c"]]
+values = [2.0, 3.0]
+queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
+
+Output:
+[6.0, 0.5, -1.0, 1.0, -1.0]
 
 Explanation:
-a / b = 2.0, b / c = 3.0
-So, a / c = a / b * b / c = 2.0 * 3.0 = 6.0
-And, b / a = 1 / (a / b) = 0.5
-
-Constraints:
-- 1 <= equations.length <= 20
-- equations[i].length == 2
-- 1 <= Ai.length, Bi.length <= 5
-- values.length == equations.length
-- 0.0 < values[i] <= 20.0
-- 1 <= queries.length <= 20
-- queries[i].length == 2
-- Ai, Bi, Cj, Dj consist of lower-case English letters and digits.
-
----------------------------------
+- a / b = 2.0
+- b / c = 3.0
+So, a / c = a/b * b/c = 2.0 * 3.0 = 6.0
+------------------------------------------------------------
 Approach:
-1. Build a graph where each variable is a node.
-2. For an equation A / B = k:
-   - Add edge A -> B with weight k.
-   - Add edge B -> A with weight 1/k.
+1. Build a graph where each variable is a node, and edges store ratios.
+   Example: a -> b = 2.0, b -> a = 1/2.0
+2. For each query, perform DFS to find a path between nodes.
+   Multiply edge weights along the path to get the result.
+3. If no path exists, return -1.0.
+------------------------------------------------------------
+Time Complexity:
+- Building graph: O(N) where N = number of equations
+- Each query: O(V + E) in worst case (DFS traversal)
+- Overall: O(N + Q * (V + E))
+------------------------------------------------------------
+"""
+
+class Solution:
+    def calcEquation(self, equations, values, queries):
+        # Step 1: Build graph
+        graph = {}
+        for (a, b), val in zip(equations, values):
+            if a not in graph:
+                graph[a] = {}
+            if b not in graph:
+                graph[b] = {}
+            graph[a][b] = val
+            graph[b][a] = 1.0 / val
+
+        # Step 2: DFS search
+        def dfs(start, end, visited):
+            if start == end:
+                return 1.0
+            visited.add(start)
+            for neighbor, value in graph[start].items():
+                if neighbor in visited:
+                    continue
+                result = dfs(neighbor, end, visited)
+                if result != -1.0:
+                    return value * result
+            return -1.0
+
+        # Step 3: Answer queries
+        results = []
+        for x, y in queries:
+            if x not in graph or y not in graph:
+                results.append(-1.0)
+            else:
+                results.append(dfs(x, y, set()))
+        return results
+
+
+# --------------------------
+# Example Run (for testing)
+# --------------------------
+if __name__ == "__main__":
+    equations = [["a","b"],["b","c"]]
+    values = [2.0, 3.0]
+    queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
+    print(Solution().calcEquation(equations, values, queries))
+    # Expected Output: [6.0, 0.5, -1.0, 1.0, -1.0]   - Add edge B -> A with weight 1/k.
 3. To answer a query C / D:
    - Use DFS to find a path from C to D, multiplying edge weights along the path.
    - If no path exists, return -1.0.
