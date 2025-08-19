@@ -1,0 +1,79 @@
+LeetCode Problem 909: Snakes and Ladders
+---------------------------------
+Problem Statement:
+You are given a `n x n` board representing a snakes and ladders game.
+- The board is labeled from 1 to n*n in a Boustrophedon style (zig-zag).  
+- If you land on a square with a ladder or snake, you move to the destination of that square.
+- You start from square 1 and want to reach square n*n in the minimum number of moves.
+
+Return the minimum number of moves to reach the last square. If it's impossible, return -1.
+
+Example:
+Input:
+board = [[-1,-1,-1,-1,-1,-1],
+         [-1,-1,-1,-1,-1,-1],
+         [-1,-1,-1,-1,-1,-1],
+         [-1,35,-1,-1,13,-1],
+         [-1,-1,-1,-1,-1,-1],
+         [-1,15,-1,-1,-1,-1]]
+Output: 4
+
+Constraints:
+- n == board.length == board[i].length
+- 2 <= n <= 20
+- board[i][j] is -1 or in [1, n*n]
+
+---------------------------------
+Approach:
+1. Flatten the 2D board to 1D array for easier indexing.
+2. Use BFS without imports:
+   - Each node = current square.
+   - Each edge = dice throw (1 to 6).
+   - If landing on ladder/snake, move to its destination.
+3. Track visited squares to avoid cycles.
+4. First time reaching the last square = return moves.
+
+---------------------------------
+Python Solution (without imports):
+---------------------------------
+
+class Solution:
+    def snakesAndLadders(self, board: list[list[int]]) -> int:
+        n = len(board)
+        
+        # Step 1: Flatten the board to 1D array
+        cells = [0] * (n*n + 1)
+        idx = 1
+        i = n - 1
+        j = 0
+        inc = 1
+        while idx <= n*n:
+            cells[idx] = board[i][j]
+            idx += 1
+            j += inc
+            if j == n or j == -1:
+                i -= 1
+                inc *= -1
+                j += inc
+
+        # Step 2: BFS using list as queue
+        queue = [(1, 0)]  # (cell, moves)
+        visited = set()
+        visited.add(1)
+        front = 0
+
+        while front < len(queue):
+            curr, moves = queue[front]
+            front += 1
+            if curr == n*n:
+                return moves
+            for dice in range(1, 7):
+                nxt = curr + dice
+                if nxt > n*n:
+                    continue
+                if cells[nxt] != -1:
+                    nxt = cells[nxt]
+                if nxt not in visited:
+                    visited.add(nxt)
+                    queue.append((nxt, moves + 1))
+        return -1
