@@ -1,40 +1,87 @@
 """
 LeetCode Problem 399: Evaluate Division
----------------------------------------
+---------------------------------
 Problem Statement:
-You are given equations in the format A / B = k, where A and B are variables represented as strings, 
-and k is a real number (double). Some equations are given, and you are asked to evaluate queries.
+You are given an array of variable pairs equations and an array of real numbers values, 
+where equations[i] = [Ai, Bi] and values[i] represent the equation Ai / Bi = values[i]. 
+Each Ai or Bi is a string that represents a single variable.
 
+You are also given some queries, where queries[j] = [Cj, Dj] represents the equation Cj / Dj.
 Return the answers for all queries. If the answer does not exist, return -1.0.
 
 Example:
-Input: equations = [["a","b"],["b","c"]], values = [2.0,3.0], 
-       queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
+Input: 
+equations = [["a","b"],["b","c"]], values = [2.0,3.0], queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
 Output: [6.00000,0.50000,-1.00000,1.00000,-1.00000]
 
 Explanation:
-- a / c = (a / b) * (b / c) = 2.0 * 3.0 = 6.0
-- b / a = 1 / (a / b) = 1 / 2.0 = 0.5
-- a / e = not possible => -1.0
-- a / a = 1.0
-- x / x = -1.0 (x not found)
+a / b = 2.0, b / c = 3.0
+So, a / c = a / b * b / c = 2.0 * 3.0 = 6.0
+And, b / a = 1 / (a / b) = 0.5
 
 Constraints:
 - 1 <= equations.length <= 20
 - equations[i].length == 2
-- 1 <= A.length, B.length <= 5
+- 1 <= Ai.length, Bi.length <= 5
+- values.length == equations.length
 - 0.0 < values[i] <= 20.0
 - 1 <= queries.length <= 20
 - queries[i].length == 2
-- A, B consist of lowercase English letters and digits.
+- Ai, Bi, Cj, Dj consist of lower-case English letters and digits.
 
----------------------------------------
+---------------------------------
 Approach:
 1. Build a graph where each variable is a node.
-2. Each equation A / B = k adds:
-   - Edge A → B with weight k
-   - Edge B → A with weight 1/k
-3. For each query (X, Y), perform DFS/BFS to find if a path exists.
+2. For an equation A / B = k:
+   - Add edge A -> B with weight k.
+   - Add edge B -> A with weight 1/k.
+3. To answer a query C / D:
+   - Use DFS to find a path from C to D, multiplying edge weights along the path.
+   - If no path exists, return -1.0.
+
+---------------------------------
+Time Complexity:
+- Building graph: O(N), where N is number of equations.
+- Answering queries: O(Q * N), since DFS may visit all nodes per query.
+  (Q = number of queries)
+
+Space Complexity:
+O(N), for storing the graph and visited set.
+"""
+
+class Solution:
+    def calcEquation(self, equations, values, queries):
+        # Step 1: Build the graph
+        graph = {}
+        
+        for (a, b), val in zip(equations, values):
+            if a not in graph:
+                graph[a] = {}
+            if b not in graph:
+                graph[b] = {}
+            graph[a][b] = val
+            graph[b][a] = 1 / val
+
+        # Step 2: DFS to evaluate query
+        def dfs(curr, target, visited):
+            if curr not in graph or target not in graph:
+                return -1.0
+            if curr == target:
+                return 1.0
+            visited.add(curr)
+            for neighbor, val in graph[curr].items():
+                if neighbor not in visited:
+                    result = dfs(neighbor, target, visited)
+                    if result != -1.0:
+                        return val * result
+            return -1.0
+
+        # Step 3: Process each query
+        results = []
+        for a, b in queries:
+            results.append(dfs(a, b, set()))
+        
+        return results3. For each query (X, Y), perform DFS/BFS to find if a path exists.
 4. Multiply weights along the path to compute result.
 5. If no path exists, return -1.0.
 
