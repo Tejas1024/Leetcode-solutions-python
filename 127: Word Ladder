@@ -1,0 +1,82 @@
+"""
+LeetCode Problem 127: Word Ladder
+Difficulty: Medium
+--------------------------------------
+
+🧠 Problem Statement:
+Given a `beginWord`, an `endWord`, and a `wordList` (list of allowed words),
+find the **length of the shortest transformation sequence** from `beginWord` to `endWord`.
+
+Rules:
+1. Only one letter can be changed at a time.
+2. Each transformed word must exist in the `wordList`.
+3. If no such transformation exists, return 0.
+
+Example 1:
+Input:
+    beginWord = "hit"
+    endWord = "cog"
+    wordList = ["hot","dot","dog","lot","log","cog"]
+Output: 5
+
+Explanation:
+Transformation sequence: hit -> hot -> dot -> dog -> cog
+
+Example 2:
+Input:
+    beginWord = "hit"
+    endWord = "cog"
+    wordList = ["hot","dot","dog","lot","log"]
+Output: 0
+
+Explanation:
+End word "cog" is not in the word list, so transformation is impossible.
+
+--------------------------------------
+
+✅ Approach:
+- Use **BFS (Breadth First Search)** to find the shortest path:
+  1. Treat each word as a node in a graph.
+  2. Words are connected if they differ by exactly **one letter**.
+  3. BFS guarantees the first time we reach `endWord` is the shortest sequence.
+- Keep track of visited words to avoid cycles.
+
+--------------------------------------
+"""
+
+class Solution:
+    def ladderLength(self, beginWord: str, endWord: str, wordList: list[str]) -> int:
+        # Convert wordList to a set for fast lookup
+        word_set = set(wordList)
+        if endWord not in word_set:
+            return 0  # cannot reach endWord
+
+        # BFS queue: each element is (current_word, steps_so_far)
+        queue = [(beginWord, 1)]  # start with 1 step (including beginWord)
+
+        while queue:
+            current, steps = queue.pop(0)  # pop first element (FIFO)
+            if current == endWord:
+                return steps
+
+            # Try changing each character in the word
+            for i in range(len(current)):
+                for c in 'abcdefghijklmnopqrstuvwxyz':
+                    if c != current[i]:
+                        mutated = current[:i] + c + current[i+1:]
+                        if mutated in word_set:
+                            queue.append((mutated, steps + 1))
+                            word_set.remove(mutated)  # mark as visited
+
+        # If BFS ends without reaching endWord
+        return 0
+
+"""
+📊 Time Complexity: O(N * M * 26)
+- N = number of words in the wordList
+- M = length of each word
+- 26 = possible letters for each position
+
+🧠 Space Complexity: O(N)
+- To store the word set and BFS queue
+"""
