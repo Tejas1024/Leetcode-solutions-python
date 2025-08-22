@@ -1,0 +1,88 @@
+"""
+LeetCode Problem 433: Minimum Genetic Mutation
+Difficulty: Medium
+--------------------------------------
+
+🧠 Problem Statement:
+A gene string is represented by an 8-character long string,
+where each character is one of: 'A', 'C', 'G', 'T'.
+
+A mutation changes **exactly one character** in the gene string.
+However, each mutated gene must be in the given "bank" list to be valid.
+
+Given a start gene, an end gene, and a bank of valid genes,
+return the minimum number of mutations needed to transform
+the start gene into the end gene.
+If no such transformation is possible, return -1.
+
+Example 1:
+Input:
+    start = "AACCGGTT"
+    end   = "AAACGGTA"
+    bank  = ["AACCGGTA","AACCGCTA","AAACGGTA"]
+Output: 2
+
+Explanation:
+"AACCGGTT" -> "AACCGGTA" -> "AAACGGTA"
+
+Example 2:
+Input:
+    start = "AAAAACCC"
+    end   = "AACCCCCC"
+    bank  = ["AAAACCCC","AAACCCCC","AACCCCCC"]
+Output: 3
+
+Explanation:
+"AAAAACCC" -> "AAAACCCC" -> "AAACCCCC" -> "AACCCCCC"
+
+--------------------------------------
+
+✅ Approach:
+This is a shortest path problem:
+- Each gene string is a node.
+- Two nodes are connected if they differ by exactly 1 character.
+- We need the minimum number of steps from start to end.
+
+Algorithm (BFS without imports):
+1. Use a list as a queue for BFS.
+2. For each gene, generate all possible 1-character mutations.
+3. If a valid mutation is in the bank, add it to the queue.
+4. When the end gene is reached, return the number of steps.
+5. If BFS finishes with no success, return -1.
+
+--------------------------------------
+"""
+
+class Solution:
+    def minMutation(self, start: str, end: str, bank: list[str]) -> int:
+        bank_set = set(bank)  # faster lookup
+        if end not in bank_set:
+            return -1
+
+        genes = ['A', 'C', 'G', 'T']
+        queue = [(start, 0)]  # list used as queue: (gene, steps)
+
+        while queue:
+            gene, steps = queue.pop(0)  # pop(0) works like deque.popleft()
+            if gene == end:
+                return steps
+
+            for i in range(len(gene)):
+                for ch in genes:
+                    if gene[i] != ch:
+                        new_gene = gene[:i] + ch + gene[i+1:]
+                        if new_gene in bank_set:
+                            queue.append((new_gene, steps + 1))
+                            bank_set.remove(new_gene)  # avoid revisiting
+        return -1
+
+
+"""
+📊 Time Complexity: O(N * L * 4)
+- N = number of genes in the bank
+- L = length of each gene (8 here)
+- For each gene, we attempt 8 * 4 = 32 possible mutations.
+
+🧠 Space Complexity: O(N)
+- To store the bank set and BFS queue.
+"""
