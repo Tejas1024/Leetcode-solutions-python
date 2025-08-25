@@ -1,0 +1,85 @@
+"""
+LeetCode Problem 208: Implement Trie (Prefix Tree)
+Difficulty: Medium
+--------------------------------------
+
+🧠 Problem Statement:
+Design and implement a data structure `Trie` that supports the following operations:
+1. insert(word): Inserts a word into the trie.
+2. search(word): Returns True if the word is in the trie.
+3. startsWith(prefix): Returns True if there is any word in the trie that starts with the given prefix.
+
+--------------------------------------
+Example 1:
+
+Input:
+    trie = Trie()
+    trie.insert("apple")
+    trie.search("apple")   # True
+    trie.search("app")     # False
+    trie.startsWith("app") # True
+    trie.insert("app")
+    trie.search("app")     # True
+
+Output:
+    [None, None, True, False, True, None, True]
+
+--------------------------------------
+
+✅ Approach:
+- Use a **Trie Node class** where each node stores:
+  - children → dictionary (key: character, value: next TrieNode)
+  - endOfWord → boolean flag to mark the end of a valid word
+- The main `Trie` class:
+  1. insert(): Traverse nodes character by character, create new nodes if needed.
+  2. search(): Traverse nodes character by character, return True if final node is marked as endOfWord.
+  3. startsWith(): Traverse prefix, return True if traversal is possible.
+
+--------------------------------------
+"""
+
+class TrieNode:
+    def __init__(self):
+        self.children = {}       # maps character -> TrieNode
+        self.endOfWord = False   # True if this node marks the end of a word
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+        node.endOfWord = True
+
+    def search(self, word: str) -> bool:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                return False
+            node = node.children[ch]
+        return node.endOfWord
+
+    def startsWith(self, prefix: str) -> bool:
+        node = self.root
+        for ch in prefix:
+            if ch not in node.children:
+                return False
+            node = node.children[ch]
+        return True
+
+
+"""
+📊 Time Complexity:
+- insert(): O(L)   where L = length of word
+- search(): O(L)
+- startsWith(): O(P) where P = length of prefix
+
+🧠 Space Complexity: O(N * L)
+- N = number of words stored
+- L = average word length
+- Space is used by Trie nodes
+"""
