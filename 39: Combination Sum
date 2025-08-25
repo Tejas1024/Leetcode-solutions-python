@@ -1,0 +1,77 @@
+LeetCode Problem 39: Combination Sum
+Difficulty: Medium
+
+-----------------------------------------------------------
+Problem Statement:
+Given an array of distinct integers `candidates` and a target integer `target`, 
+return a list of all unique combinations of candidates where the chosen numbers 
+sum to `target`. You may return the combinations in any order.
+
+The same number may be chosen from candidates an unlimited number of times. 
+Two combinations are unique if the frequency of at least one of the chosen 
+numbers is different.
+
+Constraints:
+- 1 <= candidates.length <= 30
+- 2 <= candidates[i] <= 40
+- 1 <= target <= 40
+- All elements of candidates are distinct.
+
+Example 1:
+Input: candidates = [2,3,6,7], target = 7
+Output: [[2,2,3],[7]]
+
+Example 2:
+Input: candidates = [2,3,5], target = 8
+Output: [[2,2,2,2],[2,3,3],[3,5]]
+
+Example 3:
+Input: candidates = [2], target = 1
+Output: []
+-----------------------------------------------------------
+
+✅ Approach:
+1. Use backtracking to explore all possible combinations.
+2. At each step:
+   - Subtract the current number from the target.
+   - If target becomes 0 → valid combination, add to result.
+   - If target < 0 → invalid path, backtrack.
+   - Otherwise, continue with the same number (since unlimited use is allowed).
+3. Move forward in candidates list to avoid duplicate combinations.
+
+Why Backtracking?
+- Because we explore all possible choices, but prune early when target < 0.
+-----------------------------------------------------------
+class Solution:
+    def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:
+        result = []
+
+        def backtrack(start, path, total):
+            # Base case: if total == target → valid combination
+            if total == target:
+                result.append(path[:])
+                return
+            # If total exceeds target → stop exploring
+            if total > target:
+                return
+
+            # Try each candidate starting from 'start'
+            for i in range(start, len(candidates)):
+                path.append(candidates[i])  # choose
+                backtrack(i, path, total + candidates[i])  # explore further
+                path.pop()  # undo (backtrack)
+
+        backtrack(0, [], 0)
+        return result
+
+
+-----------------------------------------------------------
+📊 Time Complexity: O(2^t) approx
+- 't' is the target value.
+- Each number can be chosen multiple times → exponential possibilities.
+- But pruned heavily when sum exceeds target.
+
+🧠 Space Complexity: O(t)
+- Recursion depth depends on target (worst case: many 2’s add up to target).
+- Result list stores all valid combinations.
+-----------------------------------------------------------
