@@ -1,0 +1,95 @@
+"""
+LeetCode Problem 211: Design Add and Search Words Data Structure
+Difficulty: Medium
+--------------------------------------
+
+🧠 Problem Statement:
+Design a data structure that supports adding new words and finding if a string 
+matches any previously added string. A string may contain the dot character '.' 
+which can represent any one letter.
+
+You must implement:
+1. addWord(word) – Adds a word into the data structure.
+2. search(word) – Returns True if any string in the data structure matches `word`.
+   The string `word` may contain '.' where '.' can match any letter.
+
+--------------------------------------
+Example:
+
+Input:
+    wordDictionary = WordDictionary()
+    wordDictionary.addWord("bad")
+    wordDictionary.addWord("dad")
+    wordDictionary.addWord("mad")
+    wordDictionary.search("pad")   # False
+    wordDictionary.search("bad")   # True
+    wordDictionary.search(".ad")   # True
+    wordDictionary.search("b..")   # True
+
+Output:
+    [None, None, None, None, True, True, True]
+
+--------------------------------------
+
+✅ Approach:
+- Use a **Trie Node structure** with:
+  - children → dictionary mapping characters to child nodes
+  - endOfWord → boolean marking end of a word
+- For addWord:
+  - Traverse through characters and build Trie nodes if not present.
+- For search:
+  - If the character is a normal letter → move to the matching child.
+  - If the character is '.', we must explore **all children** at that level (DFS).
+  - Return True if any path leads to a valid word.
+
+--------------------------------------
+"""
+
+class TrieNode:
+    def __init__(self):
+        self.children = {}       # char -> TrieNode
+        self.endOfWord = False   # marks end of valid word
+
+class WordDictionary:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def addWord(self, word: str) -> None:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+        node.endOfWord = True
+
+    def search(self, word: str) -> bool:
+        def dfs(node, i):
+            # Base case: if we've reached the end of the word
+            if i == len(word):
+                return node.endOfWord
+
+            ch = word[i]
+            if ch == ".":
+                # Try all possible children
+                for child in node.children.values():
+                    if dfs(child, i + 1):
+                        return True
+                return False
+            else:
+                if ch not in node.children:
+                    return False
+                return dfs(node.children[ch], i + 1)
+
+        return dfs(self.root, 0)
+
+
+"""
+📊 Time Complexity:
+- addWord(): O(L)  where L = length of word
+- search():
+    - Best case (no '.') → O(L)
+    - Worst case (many '.') → O(N * 26) in branching, but usually fast enough in practice
+🧠 Space Complexity: O(N * L) 
+- N = number of words
+- L = average length of words
+"""
