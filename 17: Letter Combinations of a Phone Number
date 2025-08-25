@@ -1,0 +1,89 @@
+"""
+LeetCode Problem 17: Letter Combinations of a Phone Number
+Difficulty: Medium
+
+-----------------------------------------------------------
+Problem Statement:
+Given a string containing digits from 2–9 inclusive, return all possible letter 
+combinations that the number could represent. Return the answer in any order.
+
+The mapping of digits to letters (just like on a telephone button) is given below:
+2 -> "abc"
+3 -> "def"
+4 -> "ghi"
+5 -> "jkl"
+6 -> "mno"
+7 -> "pqrs"
+8 -> "tuv"
+9 -> "wxyz"
+
+Example 1:
+Input: digits = "23"
+Output: ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+
+Example 2:
+Input: digits = ""
+Output: []
+
+Example 3:
+Input: digits = "2"
+Output: ["a","b","c"]
+-----------------------------------------------------------
+
+✅ Approach:
+1. Use a dictionary to map each digit to its corresponding letters.
+2. Use backtracking (recursive function) to build all possible combinations:
+   - Start with an empty string.
+   - At each step, add a letter corresponding to the current digit.
+   - When all digits are processed, add the combination to the result list.
+3. Return the result list.
+
+Why Backtracking?
+- Because we need to explore all possible letter paths for each digit.
+-----------------------------------------------------------
+"""
+
+class Solution:
+    def letterCombinations(self, digits: str):
+        # If input is empty, return empty list
+        if not digits:
+            return []
+
+        # Mapping digits to letters
+        phone_map = {
+            "2": "abc", "3": "def", "4": "ghi", "5": "jkl",
+            "6": "mno", "7": "pqrs", "8": "tuv", "9": "wxyz"
+        }
+
+        result = []
+
+        def backtrack(index, path):
+            # Base case: if path length == digits length → one full combination formed
+            if index == len(digits):
+                result.append(path)
+                return
+
+            # Get possible letters for current digit
+            possible_letters = phone_map[digits[index]]
+
+            # Try each letter and backtrack
+            for letter in possible_letters:
+                backtrack(index + 1, path + letter)
+
+        # Start backtracking from first digit
+        backtrack(0, "")
+        return result
+
+
+"""
+-----------------------------------------------------------
+📊 Time Complexity: O(4^n * n)
+- Each digit can map to up to 4 letters (worst case).
+- For 'n' digits, we explore at most 4^n combinations.
+- Each combination takes O(n) to build.
+
+🧠 Space Complexity: O(n)
+- Recursion stack uses at most 'n' calls (depth of digits).
+- Result list stores all combinations.
+-----------------------------------------------------------
+"""
