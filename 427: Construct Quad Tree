@@ -1,0 +1,85 @@
+"""
+LeetCode Problem 427: Construct Quad Tree
+Difficulty: Medium
+
+-----------------------------------------------------------
+Problem Statement:
+Given a n x n grid of 0's and 1's, construct a **quad tree** representing the grid.
+
+- A quad tree is a tree in which each internal node has exactly four children:
+  topLeft, topRight, bottomLeft, bottomRight.
+- Each node has:
+  - val: True (1) or False (0)
+  - isLeaf: True if node represents a single value, False otherwise
+
+Example 1:
+Input: grid = [[0,1],[1,0]]
+Output: QuadTree representing the grid with internal node and 4 leaf children.
+
+Example 2:
+Input: grid = [[1,1],[1,1]]
+Output: Single leaf node with val = 1
+-----------------------------------------------------------
+
+✅ Approach:
+1. Use **divide and conquer (recursion)**.
+2. Check if the current subgrid is uniform:
+   - All 0's or all 1's → create a leaf node.
+3. Otherwise, divide the grid into 4 quadrants:
+   - topLeft, topRight, bottomLeft, bottomRight
+   - Recursively build each quadrant.
+4. Combine children into a parent node with `isLeaf = False`.
+-----------------------------------------------------------
+"""
+
+# Definition for a QuadTree node.
+# class Node:
+#     def __init__(self, val, isLeaf, topLeft=None, topRight=None, bottomLeft=None, bottomRight=None):
+#         self.val = val
+#         self.isLeaf = isLeaf
+#         self.topLeft = topLeft
+#         self.topRight = topRight
+#         self.bottomLeft = bottomLeft
+#         self.bottomRight = bottomRight
+
+class Solution:
+    def construct(self, grid):
+        n = len(grid)
+
+        def helper(x0, y0, length):
+            # Check if current subgrid is uniform
+            val = grid[x0][y0]
+            uniform = True
+            for i in range(x0, x0 + length):
+                for j in range(y0, y0 + length):
+                    if grid[i][j] != val:
+                        uniform = False
+                        break
+                if not uniform:
+                    break
+
+            if uniform:
+                # Create leaf node
+                return Node(val == 1, True)
+            
+            # Divide into 4 quadrants
+            half = length // 2
+            topLeft = helper(x0, y0, half)
+            topRight = helper(x0, y0 + half, half)
+            bottomLeft = helper(x0 + half, y0, half)
+            bottomRight = helper(x0 + half, y0 + half, half)
+            # Create internal node
+            return Node(True, False, topLeft, topRight, bottomLeft, bottomRight)
+
+        return helper(0, 0, n)
+
+
+"""
+-----------------------------------------------------------
+📊 Time Complexity: O(n^2 log n)
+- Each cell may be visited multiple times in recursive divisions.
+
+🧠 Space Complexity: O(log n)
+- Recursion stack depth = log n for divisions.
+-----------------------------------------------------------
+"""
