@@ -1,0 +1,78 @@
+"""
+LeetCode Problem 23: Merge k Sorted Lists
+Difficulty: Hard
+
+-----------------------------------------------------------
+Problem Statement:
+You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.
+Merge all the linked-lists into one sorted linked-list and return it.
+
+Example 1:
+Input: lists = [[1,4,5],[1,3,4],[2,6]]
+Output: [1,1,2,3,4,4,5,6]
+
+Example 2:
+Input: lists = []
+Output: []
+
+Example 3:
+Input: lists = [[]]
+Output: []
+-----------------------------------------------------------
+
+✅ Approach (Divide & Conquer, no heap, no imports):
+1. Pairwise merge the lists: merge lists[0] with lists[1], lists[2] with lists[3], ...
+2. After one pass, the number of lists halves. Repeat until only one list remains.
+3. Merging two sorted linked lists is done in O(n) using a dummy head and a tail pointer.
+4. This achieves O(N log k) time without extra libraries.
+
+Why this works:
+- Each element is moved O(log k) times (one per merge "level").
+- Iterative merging avoids recursion depth issues and requires O(1) extra space (besides output).
+-----------------------------------------------------------
+"""
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+
+class Solution:
+    def mergeKLists(self, lists):
+        if not lists:
+            return None
+
+        def merge(l1, l2):
+            dummy = ListNode(0)
+            tail = dummy
+            while l1 and l2:
+                if l1.val < l2.val:
+                    tail.next = l1
+                    l1 = l1.next
+                else:
+                    tail.next = l2
+                    l2 = l2.next
+                tail = tail.next
+            tail.next = l1 if l1 else l2
+            return dummy.next
+
+        interval = 1
+        n = len(lists)
+        while interval < n:
+            for i in range(0, n - interval, interval * 2):
+                lists[i] = merge(lists[i], lists[i + interval])
+            interval *= 2
+        return lists[0] if n > 0 else None
+
+
+"""
+-----------------------------------------------------------
+📊 Time Complexity: O(N log k)
+- N = total number of nodes across all lists, k = number of lists.
+- Each "level" merges pairs; there are log k levels, and each node is processed per level.
+
+🧠 Space Complexity: O(1) extra
+- Iterative merge uses constant extra space (excluding the output list).
+-----------------------------------------------------------
+"""
