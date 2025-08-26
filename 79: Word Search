@@ -1,0 +1,100 @@
+"""
+LeetCode Problem 79: Word Search
+Difficulty: Medium
+
+-----------------------------------------------------------
+Problem Statement:
+Given an m x n grid of characters `board` and a string `word`, 
+return true if `word` exists in the grid.
+
+The word can be constructed from letters of sequentially adjacent cells, 
+where "adjacent" cells are horizontally or vertically neighboring. 
+The same letter cell may not be used more than once.
+
+Example 1:
+Input: board = [
+  ["A","B","C","E"],
+  ["S","F","C","S"],
+  ["A","D","E","E"]
+], word = "ABCCED"
+Output: true
+
+Example 2:
+Input: board = [
+  ["A","B","C","E"],
+  ["S","F","C","S"],
+  ["A","D","E","E"]
+], word = "SEE"
+Output: true
+
+Example 3:
+Input: board = [
+  ["A","B","C","E"],
+  ["S","F","C","S"],
+  ["A","D","E","E"]
+], word = "ABCB"
+Output: false
+-----------------------------------------------------------
+
+✅ Approach (Backtracking + DFS):
+1. Start from every cell in the grid.
+2. If the letter matches the current character of the word:
+   - Explore in all 4 directions (up, down, left, right).
+3. Mark a cell as visited (temporarily replace with "#") 
+   to avoid reusing the same cell in the current path.
+4. Backtrack (restore the letter) after exploring.
+5. If we match all characters in the word, return True.
+6. If no path matches, return False.
+-----------------------------------------------------------
+"""
+
+class Solution:
+    def exist(self, board, word):
+        rows, cols = len(board), len(board[0])
+
+        def backtrack(r, c, index):
+            # Base case: if full word is found
+            if index == len(word):
+                return True
+
+            # Check boundaries and character match
+            if r < 0 or c < 0 or r >= rows or c >= cols or board[r][c] != word[index]:
+                return False
+
+            # Mark the cell as visited
+            temp = board[r][c]
+            board[r][c] = "#"
+
+            # Explore all 4 directions
+            found = (backtrack(r + 1, c, index + 1) or
+                     backtrack(r - 1, c, index + 1) or
+                     backtrack(r, c + 1, index + 1) or
+                     backtrack(r, c - 1, index + 1))
+
+            # Restore the cell (backtracking)
+            board[r][c] = temp
+
+            return found
+
+        # Try to start from each cell
+        for r in range(rows):
+            for c in range(cols):
+                if backtrack(r, c, 0):
+                    return True
+
+        return False
+
+
+"""
+-----------------------------------------------------------
+📊 Time Complexity:
+- Worst case: O(M * N * 4^L)
+  - M, N = board dimensions
+  - L = length of word
+  - Each cell can branch into 4 directions.
+
+🧠 Space Complexity: O(L)
+- Recursion depth can go up to the length of the word.
+- Board is modified in-place, no extra DS except recursion stack.
+-----------------------------------------------------------
+"""
