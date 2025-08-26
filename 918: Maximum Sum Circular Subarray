@@ -1,0 +1,83 @@
+"""
+LeetCode Problem 918: Maximum Sum Circular Subarray
+Difficulty: Medium
+
+-----------------------------------------------------------
+Problem Statement:
+Given a circular integer array nums of length n, return 
+the maximum possible sum of a non-empty subarray.
+
+- A circular array means that the end of the array 
+  connects back to the start.
+- A subarray can wrap around from the end to the beginning.
+
+Example 1:
+Input: nums = [1,-2,3,-2]
+Output: 3
+Explanation: Subarray [3] has maximum sum.
+
+Example 2:
+Input: nums = [5,-3,5]
+Output: 10
+Explanation: Subarray [5,5] (circular) has maximum sum.
+
+Example 3:
+Input: nums = [-3,-2,-3]
+Output: -2
+Explanation: Subarray [-2] has maximum sum.
+-----------------------------------------------------------
+
+✅ Approach:
+1. This problem has **two cases**:
+   - Case 1: The max subarray is in the normal (non-circular) array.
+     → Use Kadane’s Algorithm (same as Problem 53).
+   - Case 2: The max subarray wraps around (circular).
+     → Formula: total_sum - (minimum subarray sum).
+     Because if we take everything except the minimum subarray, 
+     we effectively choose the circular part.
+
+2. Answer = max(normal_max, circular_max)
+   - BUT: if all numbers are negative, circular_max becomes 0.
+     In that case, just return normal_max.
+
+-----------------------------------------------------------
+"""
+
+class Solution:
+    def maxSubarraySumCircular(self, nums):
+        total_sum = sum(nums)
+
+        # Kadane’s algorithm for maximum subarray
+        current_max = nums[0]
+        max_sum = nums[0]
+
+        # Kadane’s algorithm for minimum subarray
+        current_min = nums[0]
+        min_sum = nums[0]
+
+        for i in range(1, len(nums)):
+            # For max subarray
+            current_max = max(nums[i], current_max + nums[i])
+            max_sum = max(max_sum, current_max)
+
+            # For min subarray
+            current_min = min(nums[i], current_min + nums[i])
+            min_sum = min(min_sum, current_min)
+
+        # If all numbers are negative, max_sum is the answer
+        if max_sum < 0:
+            return max_sum
+
+        # Otherwise, take the better of circular vs normal
+        return max(max_sum, total_sum - min_sum)
+
+
+"""
+-----------------------------------------------------------
+📊 Time Complexity: O(n)
+- Single pass through the array.
+
+🧠 Space Complexity: O(1)
+- Only variables are used.
+-----------------------------------------------------------
+"""
