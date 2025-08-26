@@ -26,12 +26,10 @@ Output: [3,1]
 -----------------------------------------------------------
 
 ✅ Approach:
-1. Use **divide and conquer (recursion)**.
-2. Choose the **middle element** of the array as root (to ensure balance).
-3. Recursively build:
-   - Left subtree from left half of array.
-   - Right subtree from right half of array.
-4. Stop recursion when the subarray is empty.
+1. Use recursion to build the tree.
+2. Always pick the **middle element** of the current array/subarray as root.
+3. Recursively build left and right subtrees from the left and right halves.
+4. Base case: return None when subarray is empty.
 -----------------------------------------------------------
 """
 
@@ -44,28 +42,26 @@ class TreeNode:
 
 class Solution:
     def sortedArrayToBST(self, nums):
-        def helper(left, right):
-            if left > right:
-                return None  # Base case: no elements to process
+        # Base case: empty array
+        if not nums:
+            return None
 
-            mid = (left + right) // 2
-            root = TreeNode(nums[mid])  # Middle element as root
+        mid = len(nums) // 2
+        root = TreeNode(nums[mid])
 
-            # Recursively build left and right subtrees
-            root.left = helper(left, mid - 1)
-            root.right = helper(mid + 1, right)
+        # Build left subtree from left half
+        root.left = self.sortedArrayToBST(nums[:mid])
+        # Build right subtree from right half
+        root.right = self.sortedArrayToBST(nums[mid+1:])
 
-            return root
-
-        return helper(0, len(nums) - 1)
-        
+        return root
 
 """
 -----------------------------------------------------------
 📊 Time Complexity: O(n)
-- We visit each element exactly once to create a node.
+- Every element is visited once to create a TreeNode.
 
 🧠 Space Complexity: O(log n)
-- Recursion stack height is log n for balanced BST.
+- Recursion stack height = log n for balanced BST.
 -----------------------------------------------------------
 """
