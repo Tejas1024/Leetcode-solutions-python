@@ -1,0 +1,63 @@
+"""
+LeetCode Problem 22: Generate Parentheses
+Difficulty: Medium
+
+-----------------------------------------------------------
+Problem Statement:
+Given n pairs of parentheses, write a function to generate all combinations 
+of well-formed parentheses.
+
+Example 1:
+Input: n = 3
+Output: ["((()))","(()())","(())()","()(())","()()()"]
+
+Example 2:
+Input: n = 1
+Output: ["()"]
+-----------------------------------------------------------
+
+✅ Approach:
+1. Use **backtracking** to build valid parentheses combinations.
+2. Keep track of:
+   - How many open brackets "(" we have used.
+   - How many close brackets ")" we have used.
+3. Rules:
+   - We can add "(" if open < n.
+   - We can add ")" if close < open.
+4. Stop when open == close == n (full valid combination).
+-----------------------------------------------------------
+"""
+
+class Solution:
+    def generateParenthesis(self, n: int):
+        result = []
+
+        def backtrack(current, open_count, close_count):
+            # Base case: if the string is complete
+            if open_count == n and close_count == n:
+                result.append(current)
+                return
+
+            # Add "(" if we still can
+            if open_count < n:
+                backtrack(current + "(", open_count + 1, close_count)
+
+            # Add ")" if valid (can't close more than opened)
+            if close_count < open_count:
+                backtrack(current + ")", open_count, close_count + 1)
+
+        backtrack("", 0, 0)
+        return result
+
+
+"""
+-----------------------------------------------------------
+📊 Time Complexity: O(4^n / √n) (Catalan number growth)
+- Number of valid parentheses combinations is the n-th Catalan number.
+- Each recursive call explores possible placements.
+
+🧠 Space Complexity: O(n)
+- Maximum recursion depth is '2n'.
+- Result list stores all valid combinations.
+-----------------------------------------------------------
+"""
