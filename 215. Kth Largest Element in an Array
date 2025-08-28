@@ -1,0 +1,91 @@
+# LeetCode 215. Kth Largest Element in an Array
+
+"""
+📝 Question:
+Given an integer array nums and an integer k, return the kth largest element in the array.
+Note that it is the kth largest element in the sorted order, not the kth distinct element.
+
+Example:
+Input: nums = [3,2,1,5,6,4], k = 2
+Output: 5
+
+Input: nums = [3,2,3,1,2,4,5,5,6], k = 4
+Output: 4
+"""
+
+"""
+💡 Approach (Min-Heap of size k):
+Instead of sorting the entire array, we only keep track of the k largest elements seen so far.
+
+1. Build a min-heap of the first k numbers.
+   - The heap always has the smallest element of the current "top k".
+2. For each remaining number:
+   - If the number is larger than the smallest in the heap, replace it.
+   - This way, the heap always contains the k largest numbers.
+3. At the end, the root of the heap is the kth largest element.
+
+⚡ Beginner Explanation:
+- Imagine a basket that can only hold k numbers.
+- We always throw out the smallest when a bigger one comes.
+- After going through all numbers, the smallest in the basket = kth largest in the array.
+"""
+
+class Solution:
+    def findKthLargest(self, nums: list[int], k: int) -> int:
+        # ---- Custom Min-Heap Implementation (no imports) ----
+        def heapify_down(heap, i, size):
+            smallest = i
+            left = 2 * i + 1
+            right = 2 * i + 2
+            
+            if left < size and heap[left] < heap[smallest]:
+                smallest = left
+            if right < size and heap[right] < heap[smallest]:
+                smallest = right
+            
+            if smallest != i:
+                heap[i], heap[smallest] = heap[smallest], heap[i]
+                heapify_down(heap, smallest, size)
+
+        def heapify_up(heap, i):
+            parent = (i - 1) // 2
+            while i > 0 and heap[i] < heap[parent]:
+                heap[i], heap[parent] = heap[parent], heap[i]
+                i = parent
+                parent = (i - 1) // 2
+
+        def heappush(heap, val):
+            heap.append(val)
+            heapify_up(heap, len(heap) - 1)
+
+        def heappop(heap):
+            root = heap[0]
+            heap[0] = heap[-1]
+            heap.pop()
+            if heap:
+                heapify_down(heap, 0, len(heap))
+            return root
+
+        # ---- Step 1: Build heap with first k numbers ----
+        heap = []
+        for num in nums[:k]:
+            heappush(heap, num)
+
+        # ---- Step 2: Process remaining numbers ----
+        for num in nums[k:]:
+            if num > heap[0]:   # If bigger than smallest in heap
+                heappop(heap)   # Remove smallest
+                heappush(heap, num)  # Add new number
+
+        # ---- Step 3: Root of heap = kth largest ----
+        return heap[0]
+
+"""
+⏱ Time Complexity:
+- Building heap with k numbers: O(k log k)
+- Processing remaining (n-k) numbers: O((n-k) log k)
+Total ≈ O(n log k) → Much better than sorting (O(n log n)) for large n.
+
+💾 Space Complexity:
+- Heap of size k → O(k)
+"""
