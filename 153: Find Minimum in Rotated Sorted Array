@@ -1,0 +1,61 @@
+LeetCode Problem 153: Find Minimum in Rotated Sorted Array  
+Difficulty: Medium  
+
+-----------------------------------------------------------
+Problem Statement:  
+Suppose an array of length n is sorted in ascending order and then rotated  
+between 1 and n times.  
+
+For example:  
+[0,1,2,4,5,6,7] might become [4,5,6,7,0,1,2].  
+
+Find the minimum element of this array.  
+
+You must write an algorithm with O(log n) runtime complexity.  
+
+Example 1:  
+Input: nums = [3,4,5,1,2]  
+Output: 1  
+
+Example 2:  
+Input: nums = [4,5,6,7,0,1,2]  
+Output: 0  
+
+Example 3:  
+Input: nums = [11,13,15,17]  
+Output: 11  
+-----------------------------------------------------------  
+
+✅ Approach: Modified Binary Search  
+1. We know the array is rotated sorted.  
+2. If the array is already sorted (nums[left] < nums[right]) → return nums[left].  
+3. Use binary search:  
+   - If nums[mid] > nums[right], then minimum is on the **right half**.  
+   - Otherwise, minimum is on the **left half**.  
+4. Continue until left == right → that’s the minimum.  
+
+This works in O(log n).  
+
+-----------------------------------------------------------
+class Solution:
+    def findMin(self, nums):
+        left, right = 0, len(nums) - 1
+
+        while left < right:
+            mid = (left + right) // 2
+
+            # If mid element > right element → min is in right side
+            if nums[mid] > nums[right]:
+                left = mid + 1
+            else:
+                right = mid  # min is in left side including mid
+
+        return nums[left]  # or nums[right], both same here
+
+-----------------------------------------------------------
+📊 Time Complexity: O(log n)  
+- Binary search halves the search space each time.  
+
+🧠 Space Complexity: O(1)  
+- Only variables left, right, mid used.  
+-----------------------------------------------------------
