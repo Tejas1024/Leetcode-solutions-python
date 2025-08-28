@@ -1,0 +1,65 @@
+# LeetCode 502. IPO
+
+## Question
+You are given `k` projects and `w` initial capital.  
+Each project has:
+- a **profit** (`profits[i]`)
+- a **minimum capital** required (`capital[i]`)  
+
+You can **start at most `k` projects**.  
+When you finish a project, your capital increases by the project's profit.  
+
+**Goal:** Maximize the final capital after at most `k` projects.
+
+---
+
+## Approach
+1. **Understanding the problem:**
+   - You start with some money (`w`).
+   - You can only pick projects where `capital[i] <= w`.
+   - After completing a project, add `profits[i]` to your capital.
+   - Repeat up to `k` times to maximize the final capital.
+
+2. **Key Idea:**
+   - Always pick the **most profitable project** that is currently affordable.
+   - As your capital grows, new projects may become available.
+
+3. **Steps:**
+   - Pair up projects as `(capital[i], profits[i])`.
+   - Sort them by `capital` (so we unlock projects as soon as they’re affordable).
+   - Use a **max-heap** to keep track of the available project profits.
+   - For each of the `k` rounds:
+     - Add all projects whose `capital <= w` into the heap.
+     - Pick the project with the maximum profit from the heap.
+     - Increase `w` by that profit.
+
+4. **Why a heap?**
+   - Because at each step, we need the **maximum profit** among affordable projects efficiently.
+
+---
+
+## Solution (Python)
+```python
+class Solution:
+    def findMaximizedCapital(self, k: int, w: int, profits: List[int], capital: List[int]) -> int:
+        projects = list(zip(capital, profits))
+        projects.sort()  # sort by capital required
+        
+        import heapq
+        max_heap = []
+        i = 0
+        n = len(projects)
+
+        for _ in range(k):
+            # add all affordable projects
+            while i < n and projects[i][0] <= w:
+                heapq.heappush(max_heap, -projects[i][1])  # use negative for max-heap
+                i += 1
+            
+            if not max_heap:
+                break  # no affordable projects left
+            
+            # choose most profitable project
+            w += -heapq.heappop(max_heap)
+
+        return w
