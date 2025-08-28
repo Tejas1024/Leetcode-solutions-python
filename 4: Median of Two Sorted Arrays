@@ -1,0 +1,86 @@
+LeetCode Problem 4: Median of Two Sorted Arrays  
+Difficulty: Hard  
+
+-----------------------------------------------------------
+Problem Statement:  
+Given two sorted arrays nums1 and nums2 of size m and n respectively,  
+return the median of the two sorted arrays.  
+
+The overall run time complexity should be O(log (m+n)).  
+
+Example 1:  
+Input: nums1 = [1,3], nums2 = [2]  
+Output: 2.0  
+
+Example 2:  
+Input: nums1 = [1,2], nums2 = [3,4]  
+Output: 2.5  
+
+Example 3:  
+Input: nums1 = [0,0], nums2 = [0,0]  
+Output: 0.0  
+-----------------------------------------------------------  
+
+✅ Approach 1 (Easy but O(m+n)):  
+- Merge both arrays into one sorted array.  
+- If total length is odd → pick middle element.  
+- If total length is even → average of two middle elements.  
+
+✅ Approach 2 (Efficient O(log(min(m,n)))):  
+- Use binary search on the smaller array.  
+- Partition both arrays so left half contains half of the total elements.  
+- Ensure:  
+  max(left1, left2) <= min(right1, right2).  
+- Median is then calculated from left and right partition values.  
+-----------------------------------------------------------
+class Solution:
+    def findMedianSortedArrays(self, nums1, nums2):
+        nums = sorted(nums1 + nums2)  # merge and sort
+        n = len(nums)
+        
+        # if odd length → pick middle
+        if n % 2 == 1:
+            return float(nums[n // 2])
+        else:
+            # even length → average of two middle
+            return (nums[n // 2 - 1] + nums[n // 2]) / 2
+
+class Solution:
+    def findMedianSortedArrays(self, nums1, nums2):
+        # Ensure nums1 is the smaller array
+        if len(nums1) > len(nums2):
+            nums1, nums2 = nums2, nums1
+        
+        m, n = len(nums1), len(nums2)
+        total = m + n
+        half = total // 2
+        
+        left, right = 0, m
+        while left <= right:
+            mid1 = (left + right) // 2
+            mid2 = half - mid1
+            
+            left1 = nums1[mid1 - 1] if mid1 > 0 else float("-inf")
+            right1 = nums1[mid1] if mid1 < m else float("inf")
+            
+            left2 = nums2[mid2 - 1] if mid2 > 0 else float("-inf")
+            right2 = nums2[mid2] if mid2 < n else float("inf")
+            
+            # check correct partition
+            if left1 <= right2 and left2 <= right1:
+                if total % 2 == 1:  # odd
+                    return float(min(right1, right2))
+                return (max(left1, left2) + min(right1, right2)) / 2
+            elif left1 > right2:
+                right = mid1 - 1
+            else:
+                left = mid1 + 1
+-----------------------------------------------------------
+📊 Time Complexity:  
+- Merge method: O(m+n)  
+- Optimized binary search: O(log(min(m,n)))  
+
+🧠 Space Complexity:  
+- Both use O(1) extra space.  
+-----------------------------------------------------------
+
