@@ -1,0 +1,50 @@
+"""
+LeetCode 190. Reverse Bits
+
+📝 Question:
+Reverse bits of a given 32 bits unsigned integer.
+
+Example 1:
+Input: n = 00000010100101000001111010011100
+Output:    964176192 (00111001011110000010100101000000)
+
+Example 2:
+Input: n = 11111111111111111111111111111101
+Output:   3221225471 (10111111111111111111111111111111)
+
+
+-----------------------------------------------------------
+✅ Approach:
+1. We are given a 32-bit integer `n`.
+2. We need to reverse its binary representation.
+   - Example: 000...0101 → 1010...000
+3. Use bit manipulation:
+   - Initialize result = 0
+   - Loop for 32 times:
+     • Take the last bit of n → (n & 1)
+     • Append it to result (result = result << 1 | bit)
+     • Shift n right by 1
+4. Return result.
+
+-----------------------------------------------------------
+💻 Solution:
+"""
+
+class Solution:
+    def reverseBits(self, n: int) -> int:
+        result = 0
+        for _ in range(32):
+            result = (result << 1) | (n & 1)  # append last bit of n
+            n >>= 1  # shift n right
+        return result
+
+
+"""
+-----------------------------------------------------------
+⏱️ Time Complexity: O(32) = O(1)  
+   - Always processes exactly 32 bits.
+
+💾 Space Complexity: O(1)  
+   - Uses only a few variables.
+-----------------------------------------------------------
+"""
