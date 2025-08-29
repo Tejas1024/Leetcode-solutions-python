@@ -1,0 +1,85 @@
+# LeetCode 295: Find Median from Data Stream
+# Difficulty: Hard
+
+"""
+📝 Question:
+The median is the middle value in an ordered list of integers.
+- If the size of the list is even, the median is the average of the two middle values.
+- If the size of the list is odd, the median is the middle element.
+
+Implement the MedianFinder class:
+1. MedianFinder() initializes the object.
+2. addNum(num) adds the integer num from the data stream to the data structure.
+3. findMedian() returns the median of all elements so far.
+
+Example:
+Input:
+["MedianFinder","addNum","addNum","findMedian","addNum","findMedian"]
+[[],[1],[2],[],[3],[]]
+
+Output:
+[null,null,null,1.5,null,2.0]
+"""
+
+"""
+💡 Approach:
+- We need to efficiently insert numbers and retrieve the median.
+- Use **two heaps**:
+    1. A max-heap (left) to store the smaller half of numbers.
+    2. A min-heap (right) to store the larger half.
+- Balancing rule:
+    - The two heaps should differ in size at most by 1.
+    - If odd count → max-heap has 1 extra element.
+- Median:
+    - If total count is odd → top of max-heap.
+    - If even → average of tops of both heaps.
+
+⚡ Beginner Explanation:
+- Imagine two buckets:
+  - Left bucket = smaller half of numbers (max-heap → biggest at top).
+  - Right bucket = larger half of numbers (min-heap → smallest at top).
+- Balance them as new numbers come in.
+- Median = middle number (from left or average of both).
+"""
+
+import heapq
+
+class MedianFinder:
+    def __init__(self):
+        # Max-heap for left half (invert values since Python only has min-heap)
+        self.left = []
+        # Min-heap for right half
+        self.right = []
+
+    def addNum(self, num: int) -> None:
+        # Always push into left first (max-heap simulated)
+        heapq.heappush(self.left, -num)
+
+        # Ensure every element in left <= every element in right
+        if self.left and self.right and (-self.left[0] > self.right[0]):
+            val = -heapq.heappop(self.left)
+            heapq.heappush(self.right, val)
+
+        # Balance sizes (left can only be larger by 1)
+        if len(self.left) > len(self.right) + 1:
+            val = -heapq.heappop(self.left)
+            heapq.heappush(self.right, val)
+        elif len(self.right) > len(self.left):
+            val = heapq.heappop(self.right)
+            heapq.heappush(self.left, -val)
+
+    def findMedian(self) -> float:
+        # Odd count
+        if len(self.left) > len(self.right):
+            return -self.left[0]
+        # Even count
+        return (-self.left[0] + self.right[0]) / 2
+
+"""
+⏱ Time Complexity:
+- addNum: O(log n) (due to heap push/pop)
+- findMedian: O(1)
+
+💾 Space Complexity:
+- O(n) to store all numbers in two heaps
+"""
