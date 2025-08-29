@@ -1,0 +1,63 @@
+"""
+LeetCode 67. Add Binary
+
+📝 Question:
+Given two binary strings a and b, return their sum as a binary string.
+
+Example 1:
+Input: a = "11", b = "1"
+Output: "100"
+
+Example 2:
+Input: a = "1010", b = "1011"
+Output: "10101"
+
+
+-----------------------------------------------------------
+✅ Approach:
+1. We need to add two binary strings, similar to how we add decimal numbers.
+2. Start from the rightmost bit (like manual addition).
+3. Keep track of `carry` while adding.
+   - sum = bit1 + bit2 + carry
+   - result_bit = sum % 2
+   - carry = sum // 2
+4. Keep appending result bits and finally reverse them.
+5. If carry is left after processing all bits, append it.
+6. Return the final binary string.
+
+-----------------------------------------------------------
+💻 Solution:
+"""
+
+class Solution:
+    def addBinary(self, a: str, b: str) -> str:
+        i, j = len(a) - 1, len(b) - 1
+        carry = 0
+        result = []
+
+        # Loop while either string has bits left OR carry exists
+        while i >= 0 or j >= 0 or carry:
+            total = carry
+
+            if i >= 0:
+                total += int(a[i])
+                i -= 1
+            if j >= 0:
+                total += int(b[j])
+                j -= 1
+
+            result.append(str(total % 2))  # bit result
+            carry = total // 2             # update carry
+
+        return ''.join(reversed(result))
+
+
+"""
+-----------------------------------------------------------
+⏱️ Time Complexity: O(max(len(a), len(b)))  
+   - We process each bit once.
+
+💾 Space Complexity: O(max(len(a), len(b)))  
+   - Result array stores the final sum bits.
+-----------------------------------------------------------
+"""
