@@ -1,0 +1,71 @@
+"""
+LeetCode 69. Sqrt(x)
+
+📝 Question:
+Given a non-negative integer x, return the square root of x rounded down to the nearest integer.  
+The returned integer should be non-negative.  
+You must not use any built-in exponent function or operator (e.g., pow(x, 0.5)).
+
+Example 1:
+Input: x = 4
+Output: 2
+
+Example 2:
+Input: x = 8
+Output: 2
+Explanation: sqrt(8) ≈ 2.828 → rounded down = 2
+
+
+-----------------------------------------------------------
+✅ Approach:
+We need the integer part of √x.
+
+Option 1: **Binary Search (efficient)**
+- We know sqrt(x) lies between 0 and x.
+- Use binary search:
+  - mid = (left + right) // 2
+  - If mid² == x → return mid
+  - If mid² < x → move left = mid + 1 (store mid as answer)
+  - If mid² > x → move right = mid - 1
+- Finally, return stored answer.
+
+⚡ Example:
+x = 8
+Search range: [0, 8]
+mid=4 → 4²=16>8 → move left
+mid=2 → 2²=4<8 → possible answer=2
+mid=3 → 3²=9>8 → stop
+Answer=2
+
+-----------------------------------------------------------
+💻 Solution:
+"""
+
+class Solution:
+    def mySqrt(self, x: int) -> int:
+        if x < 2:
+            return x
+        
+        left, right = 1, x // 2
+        ans = 0
+        while left <= right:
+            mid = (left + right) // 2
+            if mid * mid == x:
+                return mid
+            elif mid * mid < x:
+                ans = mid
+                left = mid + 1
+            else:
+                right = mid - 1
+        return ans
+
+
+"""
+-----------------------------------------------------------
+⏱️ Time Complexity: O(log n)  
+   - Binary search halves the search space each step.
+
+💾 Space Complexity: O(1)  
+   - Uses constant extra space.
+-----------------------------------------------------------
+"""
