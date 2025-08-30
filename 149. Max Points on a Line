@@ -1,0 +1,95 @@
+"""
+LeetCode 149. Max Points on a Line
+
+📝 Question:
+Given an array of points where points[i] = [xi, yi] represents a point 
+on the X-Y plane, return the maximum number of points that lie on the same straight line.
+
+Example 1:
+Input: points = [[1,1],[2,2],[3,3]]
+Output: 3
+
+Example 2:
+Input: points = [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+Output: 4
+
+
+-----------------------------------------------------------
+✅ Approach:
+To check if points are on the same line → slopes must be equal.
+
+1. Iterate through each point `i`.
+2. For each other point `j`, calculate slope:
+      slope = (y2 - y1) / (x2 - x1)
+   - Vertical line (x2 - x1 = 0) → slope = "inf"
+   - Horizontal line (y2 - y1 = 0) → slope = 0
+3. Count frequency of slopes using a dictionary.
+4. The max frequency for each base point `i` gives 
+   the number of points aligned with `i`.
+5. Take maximum across all base points.
+
+⚡ Key Trick:
+To avoid floating-point errors, store slope as a fraction (dy, dx) reduced by GCD.
+
+-----------------------------------------------------------
+💻 Solution:
+"""
+
+class Solution:
+    def maxPoints(self, points: list[list[int]]) -> int:
+        n = len(points)
+        if n <= 2:
+            return n
+        
+        def gcd(a, b):
+            while b:
+                a, b = b, a % b
+            return a
+
+        result = 0
+        
+        for i in range(n):
+            slopes = {}
+            duplicates = 1
+            max_line = 0
+            x1, y1 = points[i]
+            
+            for j in range(i+1, n):
+                x2, y2 = points[j]
+                dx = x2 - x1
+                dy = y2 - y1
+                
+                if dx == 0 and dy == 0:
+                    duplicates += 1
+                    continue
+                
+                g = gcd(dx, dy)
+                if g != 0:
+                    dx //= g
+                    dy //= g
+                
+                # Normalize direction (avoid -0 issues)
+                if dx < 0:
+                    dx, dy = -dx, -dy
+                elif dx == 0:  # vertical line
+                    dy = 1
+                elif dy == 0:  # horizontal line
+                    dx = 1
+
+                slopes[(dx, dy)] = slopes.get((dx, dy), 0) + 1
+                max_line = max(max_line, slopes[(dx, dy)])
+            
+            result = max(result, max_line + duplicates)
+        
+        return result
+
+
+"""
+-----------------------------------------------------------
+⏱️ Time Complexity: O(n^2)  
+   - For each point, compare with all other points.
+
+💾 Space Complexity: O(n)  
+   - To store slopes dictionary per base point.
+-----------------------------------------------------------
+"""
