@@ -1,0 +1,67 @@
+"""
+LeetCode 137. Single Number II
+
+📝 Question:
+Given an integer array nums where every element appears exactly three times 
+except for one element, which appears exactly once.  
+Find the single element and return it.
+
+You must implement a solution with a linear runtime complexity 
+and use only constant extra space.
+
+Example 1:
+Input: nums = [2,2,3,2]
+Output: 3
+
+Example 2:
+Input: nums = [0,1,0,1,0,1,99]
+Output: 99
+
+
+-----------------------------------------------------------
+✅ Approach: Bit Manipulation
+- Each bit position (0–31) is counted across all numbers.
+- Since all numbers except one appear **3 times**, 
+  the sum of bits at each position will also be a multiple of 3 — 
+  except for the bit of the unique number.
+- We take modulo 3 at each bit to reconstruct the unique number.
+
+⚡ Key Insight:
+- Count how many numbers have the i-th bit set.
+- If count % 3 != 0, then that bit belongs to the unique number.
+
+⚠️ Handling Negative Numbers:
+- Python integers are unbounded, but in 32-bit signed integer representation,
+  if the sign bit (31st bit) is set, the result should be negative.
+- We adjust final result if it exceeds signed 32-bit range.
+
+-----------------------------------------------------------
+💻 Solution:
+"""
+
+class Solution:
+    def singleNumber(self, nums: list[int]) -> int:
+        result = 0
+        for i in range(32):   # check each bit position
+            bit_count = 0
+            for num in nums:
+                if (num >> i) & 1:
+                    bit_count += 1
+            if bit_count % 3:
+                result |= (1 << i)
+
+        # Convert result to signed integer (handle negative numbers)
+        if result >= 2**31:
+            result -= 2**32
+        return result
+
+
+"""
+-----------------------------------------------------------
+⏱️ Time Complexity: O(32 * n) ≈ O(n)  
+   - 32 is constant, so overall linear.
+
+💾 Space Complexity: O(1)  
+   - Only integer counters are used.
+-----------------------------------------------------------
+"""
