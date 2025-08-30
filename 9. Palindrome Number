@@ -1,0 +1,80 @@
+"""
+LeetCode 9. Palindrome Number
+
+📝 Question:
+Given an integer x, return true if x is a palindrome, and false otherwise.
+
+A palindrome is a number that reads the same backward as forward.
+
+Example 1:
+Input: x = 121
+Output: true
+
+Example 2:
+Input: x = -121
+Output: false
+Explanation: From left to right, it reads -121. From right to left, it becomes 121-. So it is not a palindrome.
+
+Example 3:
+Input: x = 10
+Output: false
+
+
+-----------------------------------------------------------
+✅ Approach 1: Convert to String (Beginner Friendly)
+- Convert number to string.
+- Compare with its reverse.
+- If equal, it's a palindrome.
+
+⚡ Example:
+x = 121 → "121" == "121" (reverse) → True
+
+-----------------------------------------------------------
+💻 Solution (String Method):
+"""
+
+class Solution:
+    def isPalindrome(self, x: int) -> bool:
+        s = str(x)
+        return s == s[::-1]
+
+
+"""
+-----------------------------------------------------------
+✅ Approach 2: Reverse Half of the Number (No String Conversion)
+- Negative numbers are not palindrome.
+- Numbers ending with 0 (except 0 itself) are not palindrome.
+- Reverse the last half of digits and compare with the first half.
+
+⚡ Example:
+x = 1221
+reverse = 12
+original half = 12
+→ Palindrome
+
+-----------------------------------------------------------
+💻 Solution (Mathematical Method):
+"""
+
+class Solution:
+    def isPalindrome(self, x: int) -> bool:
+        if x < 0 or (x % 10 == 0 and x != 0):
+            return False
+        
+        reversed_half = 0
+        while x > reversed_half:
+            reversed_half = reversed_half * 10 + x % 10
+            x //= 10
+        
+        return x == reversed_half or x == reversed_half // 10
+
+
+"""
+-----------------------------------------------------------
+⏱️ Time Complexity: O(log(x))  
+   - Because we process roughly half the digits of x.
+
+💾 Space Complexity: O(1)  
+   - Only uses integer variables.
+-----------------------------------------------------------
+"""
