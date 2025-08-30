@@ -1,0 +1,71 @@
+"""
+LeetCode 50. Pow(x, n)
+
+📝 Question:
+Implement pow(x, n), which calculates x raised to the power n (i.e., x^n).
+
+Example 1:
+Input: x = 2.00000, n = 10
+Output: 1024.00000
+
+Example 2:
+Input: x = 2.10000, n = 3
+Output: 9.26100
+
+Example 3:
+Input: x = 2.00000, n = -2
+Output: 0.25000
+Explanation: 2^-2 = 1/2^2 = 1/4 = 0.25
+
+
+-----------------------------------------------------------
+✅ Approach: Fast Exponentiation (Binary Exponentiation)
+Naive approach would multiply x, n times → O(n). Too slow for large n.
+We use **Exponentiation by Squaring**:
+
+- If n = 0 → return 1 (base case).
+- If n < 0 → convert to positive exponent:
+      pow(x, n) = 1 / pow(x, -n)
+- If n is even:
+      pow(x, n) = pow(x * x, n // 2)
+- If n is odd:
+      pow(x, n) = x * pow(x, n - 1)
+
+⚡ Example:
+x = 2, n = 10
+pow(2, 10) → pow(4, 5)
+= 4 * pow(16, 2)
+= 4 * pow(256, 1)
+= 4 * 256
+= 1024
+
+This reduces the problem size by half each time.
+
+-----------------------------------------------------------
+💻 Solution:
+"""
+
+class Solution:
+    def myPow(self, x: float, n: int) -> float:
+        if n == 0:
+            return 1.0
+        if n < 0:
+            return 1 / self.myPow(x, -n)
+        
+        half = self.myPow(x, n // 2)
+        
+        if n % 2 == 0:
+            return half * half
+        else:
+            return half * half * x
+
+
+"""
+-----------------------------------------------------------
+⏱️ Time Complexity: O(log n)  
+   - Exponent is halved at each step.
+
+💾 Space Complexity: O(log n) (recursive stack)  
+   - Can be reduced to O(1) if implemented iteratively.
+-----------------------------------------------------------
+"""
