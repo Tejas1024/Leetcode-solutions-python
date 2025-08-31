@@ -1,0 +1,49 @@
+LeetCode 120. Triangle  
+
+📝 Question:  
+Given a triangle array, return the minimum path sum from top to bottom.  
+At each step, you may move to the adjacent numbers on the row below.  
+
+Example 1:  
+Input: triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]  
+Output: 11  
+Explanation: The path is 2 → 3 → 5 → 1 = 11.  
+
+Example 2:  
+Input: triangle = [[-10]]  
+Output: -10  
+
+
+-----------------------------------------------------------
+✅ Approach: Dynamic Programming (Bottom-Up)
+
+- Start from the second last row and move upward.  
+- For each element `triangle[i][j]`, update it as:  
+  `triangle[i][j] += min(triangle[i+1][j], triangle[i+1][j+1])`  
+- The top element `triangle[0][0]` will hold the minimum path sum.  
+
+⚡ Key Trick:  
+Reusing the triangle array as DP table → saves extra space.  
+
+
+-----------------------------------------------------------
+💻 Solution:
+
+class Solution:
+    def minimumTotal(self, triangle: list[list[int]]) -> int:
+        n = len(triangle)
+
+        # Start from second last row, move upward
+        for i in range(n-2, -1, -1):
+            for j in range(len(triangle[i])):
+                triangle[i][j] += min(triangle[i+1][j], triangle[i+1][j+1])
+
+        return triangle[0][0]
+
+-----------------------------------------------------------
+⏱️ Time Complexity: O(n²)  
+   - Each element in the triangle is updated once.  
+
+💾 Space Complexity: O(1)  
+   - In-place DP, no extra array needed.  
+-----------------------------------------------------------
