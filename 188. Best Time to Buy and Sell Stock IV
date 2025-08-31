@@ -1,0 +1,67 @@
+LeetCode 188. Best Time to Buy and Sell Stock IV  
+
+📝 Question:  
+You are given an integer `k` and an array `prices` where `prices[i]` is the price of a stock on day `i`.  
+You may complete **at most k transactions** (buy and sell) to maximize profit.  
+You **cannot engage in multiple transactions simultaneously** (must sell before buying again).  
+
+Example 1:  
+Input: k = 2, prices = [2,4,1]  
+Output: 2  
+Explanation: Buy on day 1, sell on day 2 → profit = 2  
+
+Example 2:  
+Input: k = 2, prices = [3,2,6,5,0,3]  
+Output: 7  
+Explanation: Buy on day 2, sell on day 3 → profit = 4  
+Buy on day 5, sell on day 6 → profit = 3  
+
+
+-----------------------------------------------------------
+✅ Approach: Dynamic Programming  
+
+- If `k >= n/2` → unlimited transactions possible → use simple one-pass solution (sum of all positive diffs).  
+- Otherwise, use DP:  
+  - `dp[i][j]` = max profit using at most `i` transactions until day `j`.  
+  - Transition:  
+    `dp[i][j] = max(dp[i][j-1], max(prices[j] - prices[m] + dp[i-1][m] for m in 0..j-1))`  
+  - Optimize inner loop by tracking `maxDiff = max(maxDiff, dp[i-1][j] - prices[j])` → O(k*n) solution.  
+
+⚡ Key Trick:  
+Use `maxDiff` to avoid inner loop → efficient O(k*n) time.  
+
+
+-----------------------------------------------------------
+💻 Solution:
+
+class Solution:
+    def maxProfit(self, k: int, prices: list[int]) -> int:
+        n = len(prices)
+        if n == 0:
+            return 0
+
+        # Unlimited transactions case
+        if k >= n // 2:
+            profit = 0
+            for i in range(1, n):
+                if prices[i] > prices[i-1]:
+                    profit += prices[i] - prices[i-1]
+            return profit
+
+        dp = [[0] * n for _ in range(k + 1)]
+
+        for i in range(1, k + 1):
+            maxDiff = -prices[0]
+            for j in range(1, n):
+                dp[i][j] = max(dp[i][j-1], prices[j] + maxDiff)
+                maxDiff = max(maxDiff, dp[i-1][j] - prices[j])
+
+        return dp[k][n-1]
+
+-----------------------------------------------------------
+⏱️ Time Complexity: O(k * n)  
+   - Two nested loops: transactions x days  
+
+💾 Space Complexity: O(k * n)  
+   - DP table of size (k+1) x n  
+-----------------------------------------------------------
