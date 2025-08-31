@@ -1,0 +1,61 @@
+LeetCode 97. Interleaving String  
+
+📝 Question:  
+Given strings `s1`, `s2`, and `s3`, determine if `s3` is formed by an **interleaving** of `s1` and `s2`.  
+
+- Interleaving means `s3` contains all characters of `s1` and `s2` and preserves their relative order.  
+
+Example 1:  
+Input: s1 = "aabcc", s2 = "dbbca", s3 = "aadbbcbcac"  
+Output: true  
+
+Example 2:  
+Input: s1 = "aabcc", s2 = "dbbca", s3 = "aadbbbaccc"  
+Output: false  
+
+Example 3:  
+Input: s1 = "", s2 = "", s3 = ""  
+Output: true  
+
+
+-----------------------------------------------------------
+✅ Approach: Dynamic Programming  
+
+- Define `dp[i][j] = True` if `s3[:i+j]` can be formed by interleaving `s1[:i]` and `s2[:j]`.  
+- Base case: `dp[0][0] = True`.  
+- Transition:  
+  - If `dp[i-1][j]` is True and `s1[i-1] == s3[i+j-1]`, then `dp[i][j] = True`.  
+  - If `dp[i][j-1]` is True and `s2[j-1] == s3[i+j-1]`, then `dp[i][j] = True`.  
+
+⚡ Key Trick:  
+Use a 2D DP table or optimized 1D DP for space efficiency.  
+
+
+-----------------------------------------------------------
+💻 Solution:
+class Solution:
+    def isInterleave(self, s1: str, s2: str, s3: str) -> bool:
+        m, n = len(s1), len(s2)
+
+        if m + n != len(s3):
+            return False
+
+        dp = [[False] * (n + 1) for _ in range(m + 1)]
+        dp[0][0] = True
+
+        # Fill DP table
+        for i in range(m + 1):
+            for j in range(n + 1):
+                if i > 0 and s1[i-1] == s3[i+j-1]:
+                    dp[i][j] = dp[i][j] or dp[i-1][j]
+                if j > 0 and s2[j-1] == s3[i+j-1]:
+                    dp[i][j] = dp[i][j] or dp[i][j-1]
+
+        return dp[m][n]
+-----------------------------------------------------------
+⏱️ Time Complexity: O(m * n)  
+   - Fill DP table of size (m+1) x (n+1).  
+
+💾 Space Complexity: O(m * n)  
+   - 2D DP table stores all subproblems.  
+-----------------------------------------------------------
