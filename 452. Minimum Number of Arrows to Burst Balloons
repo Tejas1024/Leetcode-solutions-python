@@ -1,0 +1,61 @@
+LeetCode 452. Minimum Number of Arrows to Burst Balloons  
+
+📝 Question:  
+You are given an array `points` where `points[i] = [x_start, x_end]` represents a balloon on a horizontal axis.  
+An arrow can be shot at `x` and will burst all balloons where `x_start <= x <= x_end`.  
+Return the **minimum number of arrows** required to burst all balloons.  
+
+Example 1:  
+Input: points = [[10,16],[2,8],[1,6],[7,12]]  
+Output: 2  
+Explanation: Shoot an arrow at x=6 → bursts [2,8] and [1,6]  
+Shoot another arrow at x=11 → bursts [10,16] and [7,12]  
+
+Example 2:  
+Input: points = [[1,2],[3,4],[5,6],[7,8]]  
+Output: 4  
+Explanation: No overlaps → need one arrow per balloon  
+
+
+-----------------------------------------------------------
+✅ Approach: Greedy  
+
+1. Sort balloons by **end coordinate**.  
+2. Initialize `arrows = 1` and `arrow_pos = end of first balloon`.  
+3. Iterate over remaining balloons:  
+   - If balloon start > `arrow_pos` → not covered → shoot new arrow at its end, increment arrows  
+   - Else → balloon already covered by current arrow → continue  
+
+⚡ Key Trick:  
+Greedy by **earliest end** ensures maximum overlap coverage.  
+
+
+-----------------------------------------------------------
+💻 Solution:
+class Solution:
+    def findMinArrowShots(self, points: list[list[int]]) -> int:
+        if not points:
+            return 0
+
+        # Step 1: Sort balloons by end
+        points.sort(key=lambda x: x[1])
+
+        arrows = 1
+        arrow_pos = points[0][1]
+
+        # Step 2: Iterate through balloons
+        for start, end in points[1:]:
+            if start > arrow_pos:
+                arrows += 1
+                arrow_pos = end  # shoot new arrow
+
+        return arrows
+
+-----------------------------------------------------------
+⏱️ Time Complexity: O(n log n)  
+   - Sorting balloons takes O(n log n)  
+   - Iteration takes O(n)  
+
+💾 Space Complexity: O(1)  
+   - Only variables for arrows and position  
+-----------------------------------------------------------
