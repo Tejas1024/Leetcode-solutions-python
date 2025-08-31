@@ -1,0 +1,65 @@
+LeetCode 5. Longest Palindromic Substring  
+
+📝 Question:  
+Given a string `s`, return the **longest palindromic substring** in `s`.  
+
+Example 1:  
+Input: s = "babad"  
+Output: "bab"  
+Explanation: "aba" is also a valid answer.  
+
+Example 2:  
+Input: s = "cbbd"  
+Output: "bb"  
+
+Example 3:  
+Input: s = "a"  
+Output: "a"  
+
+
+-----------------------------------------------------------
+✅ Approach: Expand Around Center  
+
+- A palindrome mirrors around its center.  
+- For each character (and between characters for even-length palindromes), try to expand left and right as long as characters match.  
+- Keep track of the longest palindrome seen.  
+
+⚡ Key Trick:  
+There are 2n-1 centers in a string of length n (n single chars + n-1 between chars).  
+
+
+-----------------------------------------------------------
+💻 Solution:
+
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        if not s or len(s) == 1:
+            return s
+
+        start, end = 0, 0
+
+        def expand(left, right):
+            while left >= 0 and right < len(s) and s[left] == s[right]:
+                left -= 1
+                right += 1
+            return left + 1, right - 1
+
+        for i in range(len(s)):
+            # Odd length palindrome
+            l1, r1 = expand(i, i)
+            # Even length palindrome
+            l2, r2 = expand(i, i + 1)
+
+            if r1 - l1 > end - start:
+                start, end = l1, r1
+            if r2 - l2 > end - start:
+                start, end = l2, r2
+
+        return s[start:end + 1]
+-----------------------------------------------------------
+⏱️ Time Complexity: O(n²)  
+   - Expand around each center → worst case n expansions per center.  
+
+💾 Space Complexity: O(1)  
+   - Only pointers used, no extra storage.  
+-----------------------------------------------------------
