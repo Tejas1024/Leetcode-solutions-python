@@ -1,0 +1,61 @@
+LeetCode 322. Coin Change  
+
+📝 Question:  
+You are given an integer array `coins` representing coins of different denominations  
+and an integer `amount` representing a total amount of money.  
+
+Return the fewest number of coins that you need to make up that amount.  
+If that amount cannot be made up by any combination of the coins, return -1.  
+
+Example 1:  
+Input: coins = [1,2,5], amount = 11  
+Output: 3  
+Explanation: 11 = 5 + 5 + 1  
+
+Example 2:  
+Input: coins = [2], amount = 3  
+Output: -1  
+
+Example 3:  
+Input: coins = [1], amount = 0  
+Output: 0  
+
+
+-----------------------------------------------------------
+✅ Approach: Dynamic Programming (Bottom-Up)
+
+- We want the minimum number of coins to form each amount from 0 → target.  
+- Define `dp[x]` → min coins to make amount `x`.  
+- Initialization: `dp[0] = 0` (0 coins needed for amount 0).  
+- For each amount `a` from 1..amount:  
+  Check all coin options → `dp[a] = min(dp[a], dp[a - coin] + 1)` if valid.  
+- If `dp[amount]` is still infinity → return -1.  
+
+⚡ Key Trick:  
+Fill dp incrementally like a "knapsack" → each dp state depends on smaller amounts.  
+
+
+-----------------------------------------------------------
+💻 Solution:
+
+class Solution:
+    def coinChange(self, coins: list[int], amount: int) -> int:
+        # Initialize dp with infinity, except base case 0
+        dp = [float('inf')] * (amount + 1)
+        dp[0] = 0
+
+        # Build dp for each amount
+        for a in range(1, amount + 1):
+            for coin in coins:
+                if a - coin >= 0:
+                    dp[a] = min(dp[a], dp[a - coin] + 1)
+
+        return dp[amount] if dp[amount] != float('inf') else -1
+
+-----------------------------------------------------------
+⏱️ Time Complexity: O(amount * n)  
+   - For each amount, we try n coin options.  
+
+💾 Space Complexity: O(amount)  
+   - DP array of size amount+1.  
+-----------------------------------------------------------
