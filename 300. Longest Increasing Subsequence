@@ -1,0 +1,52 @@
+LeetCode 300. Longest Increasing Subsequence  
+
+📝 Question:  
+Given an integer array `nums`, return the length of the longest strictly increasing subsequence.  
+
+Example 1:  
+Input: nums = [10,9,2,5,3,7,101,18]  
+Output: 4  
+Explanation: The LIS is [2,3,7,101], length = 4.  
+
+Example 2:  
+Input: nums = [0,1,0,3,2,3]  
+Output: 4  
+
+Example 3:  
+Input: nums = [7,7,7,7,7,7,7]  
+Output: 1  
+
+
+-----------------------------------------------------------
+✅ Approach: Dynamic Programming (O(n²))
+
+- Define `dp[i]` = length of LIS ending at index `i`.  
+- Initially, `dp[i] = 1` for all i (a single number is always length 1).  
+- For each `i`, check all previous `j < i`:  
+  If `nums[j] < nums[i]`, then `dp[i] = max(dp[i], dp[j] + 1)`.  
+- Answer = `max(dp)`.  
+
+⚡ Key Trick:  
+We are building the LIS by extending smaller subsequences.  
+
+
+-----------------------------------------------------------
+💻 Solution:
+class Solution:
+    def lengthOfLIS(self, nums: list[int]) -> int:
+        n = len(nums)
+        dp = [1] * n   # Every element is at least LIS of length 1
+
+        for i in range(n):
+            for j in range(i):
+                if nums[j] < nums[i]:
+                    dp[i] = max(dp[i], dp[j] + 1)
+
+        return max(dp)
+-----------------------------------------------------------
+⏱️ Time Complexity: O(n²)  
+   - For each i, we check all j < i.  
+
+💾 Space Complexity: O(n)  
+   - One dp array of size n.  
+-----------------------------------------------------------
