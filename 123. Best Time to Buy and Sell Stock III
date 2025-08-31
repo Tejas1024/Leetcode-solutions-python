@@ -1,0 +1,65 @@
+LeetCode 123. Best Time to Buy and Sell Stock III  
+
+📝 Question:  
+You are given an array `prices` where `prices[i]` is the price of a given stock on day `i`.  
+You may complete **at most two transactions** (buy and sell) to maximize profit.  
+You **cannot engage in multiple transactions simultaneously** (must sell before buying again).  
+
+Example 1:  
+Input: prices = [3,3,5,0,0,3,1,4]  
+Output: 6  
+Explanation: Buy on day 4 (price=0), sell on day 6 (price=3), profit=3  
+Then buy on day 7 (price=1), sell on day 8 (price=4), profit=3  
+
+Example 2:  
+Input: prices = [1,2,3,4,5]  
+Output: 4  
+Explanation: Buy on day 1, sell on day 5  
+
+Example 3:  
+Input: prices = [7,6,4,3,1]  
+Output: 0  
+Explanation: No transactions possible  
+
+
+-----------------------------------------------------------
+✅ Approach: Dynamic Programming  
+
+- Track four states:  
+  1. `buy1`: Max profit after first buy  
+  2. `sell1`: Max profit after first sell  
+  3. `buy2`: Max profit after second buy  
+  4. `sell2`: Max profit after second sell  
+
+- Update states for each price:  
+  - `buy1 = max(buy1, -price)`  
+  - `sell1 = max(sell1, buy1 + price)`  
+  - `buy2 = max(buy2, sell1 - price)`  
+  - `sell2 = max(sell2, buy2 + price)`  
+
+⚡ Key Trick:  
+Track profits for each stage instead of using full DP table → O(n) time and O(1) space  
+
+
+-----------------------------------------------------------
+💻 Solution:
+
+class Solution:
+    def maxProfit(self, prices: list[int]) -> int:
+        buy1 = buy2 = float('-inf')
+        sell1 = sell2 = 0
+
+        for price in prices:
+            buy1 = max(buy1, -price)
+            sell1 = max(sell1, buy1 + price)
+            buy2 = max(buy2, sell1 - price)
+            sell2 = max(sell2, buy2 + price)
+
+        return sell2
+-----------------------------------------------------------
+⏱️ Time Complexity: O(n)  
+   - Single pass through prices array  
+
+💾 Space Complexity: O(1)  
+   - Only four variables used  
+-----------------------------------------------------------
